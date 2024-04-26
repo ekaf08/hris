@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('teams', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('company_id')->unsigned();
             $table->string('name');
             $table->string('icon');
-            $table->bigInteger('company_id')->unsigned();
             $table->softDeletes();
             $table->timestamps();
         });
