@@ -11,4 +11,9 @@ class Team extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 }
