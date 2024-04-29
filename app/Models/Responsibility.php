@@ -11,4 +11,9 @@ class Responsibility extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
 }
