@@ -27,8 +27,9 @@ class DatabaseSeeder extends Seeder
         /** Membuat data Dummy dari factorty */
         \App\Models\User::factory(79)->create();
         \App\Models\Company::factory(20)->create();
-        \App\Models\Team::factory(10)->create();
-        \App\Models\Role::factory(10)->create();
+        \App\Models\Team::factory(20)->create();
+        \App\Models\Role::factory(20)->create();
+        \App\Models\Responsibility::factory(200)->create();
         /** END Membuat data Dummy dari factorty */
     }
 }
