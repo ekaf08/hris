@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-class ResponApiFormatter
+class RespondApiPaginate
 {
     protected static $response = [
         'meta' => [
