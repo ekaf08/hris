@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         /** pemanggilan seeder*/
         $this->call([
             UserSeeder::class,
+            UserCompanySeeder::class,
         ]);
         /** End -*- pemanggilan seeder*/
 

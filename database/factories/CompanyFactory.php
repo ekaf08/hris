@@ -19,7 +19,6 @@ class CompanyFactory extends Factory
         return [
             'name' => $this->faker->company(),
             'logo' => $this->faker->imageUrl(),
-            'user_id' => $this->faker->numberBetween(1, 8),
         ];
     }
 }
