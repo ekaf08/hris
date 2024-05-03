@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use Illuminate\Http\Request;
 use App\Helpers\RespondApiPaginate;
+use App\Http\Requests\CreateCompanyRequest;
+use Exception;
 
 class CompanyController extends Controller
 {
@@ -34,5 +36,40 @@ class CompanyController extends Controller
         }
 
         return ResponApiFormatter::success($companies->paginate($limit), 'Company ditemukan.');
+    }
+
+    public function create(CreateCompanyRequest $request)
+    {
+        try {
+            /** cek jika ada foto maka Upload foto ke folder publik */
+            if ($request->hasFile('logo')) {
+                /** Mengambil ID terakhir*/
+                $last_id = Company::latest('id')->first()->id;
+                $last_id = $last_id + 1;
+
+                /** Mendapatkan nama file yang diunggah*/
+                $fileName = $request->file('logo')->getClientOriginalName();
+
+                /** Membuat nama kustom */
+                $customName = 'company_' . $fileName . '_'  . $last_id;
+
+                /** Menyimpan file dengan nama kustom */
+                $path = $request->file('logo')->storeAs('public/logos', $customName);
+            }
+
+            $company = Company::create([
+                'name' => $request->name,
+                'logo' => $path,
+            ]);
+
+            if (!$company) {
+                throw new Exception('Company not created.');
+            }
+
+            /** Return Response */
+            return ResponApiFormatter::success($company, 'Company Created');
+        } catch (Exception $exception) {
+            return ResponApiFormatter::error($exception->getMessage(), 500);
+        }
     }
 }
