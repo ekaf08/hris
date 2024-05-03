@@ -8,7 +8,10 @@ use App\Models\Company;
 use Illuminate\Http\Request;
 use App\Helpers\RespondApiPaginate;
 use App\Http\Requests\CreateCompanyRequest;
+use App\Http\Requests\UpdateCompanyRequest;
+use App\Models\User;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 
 class CompanyController extends Controller
 {
@@ -57,19 +60,31 @@ class CompanyController extends Controller
                 $path = $request->file('logo')->storeAs('public/logos', $customName);
             }
 
+            /** Proses simpan ke tabel company */
             $company = Company::create([
                 'name' => $request->name,
                 'logo' => $path,
             ]);
 
+            /** insert ke dalam tabel company user dari relasi many to many (company dan user) */
+            $user = User::find(Auth::id());
+            $user->companies()->attach($company->id);
+
             if (!$company) {
                 throw new Exception('Company not created.');
             }
 
-            /** Return Response */
+            /** Load User */
+            $company->load('users');
+
+            /** Return Response Success*/
             return ResponApiFormatter::success($company, 'Company Created');
         } catch (Exception $exception) {
             return ResponApiFormatter::error($exception->getMessage(), 500);
         }
+    }
+
+    public function update(UpdateCompanyRequest $request)
+    {
     }
 }
