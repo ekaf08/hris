@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CompanyController extends Controller
 {
-    public function all(Request $request)
+    public function fetch(Request $request)
     {
         $id = $request->input('id');
         $name = $request->input('name');
@@ -31,8 +31,10 @@ class CompanyController extends Controller
             return ResponApiFormatter::error('Company tidak ditemukan.', 404);
         }
 
-        /** untuk mengambil api semua company dengan mengecek filter name, */
-        $companies = Company::with(['users']);
+        /** untuk mengambil company berdasarkan login user */
+        $companies = Company::whereHas('users', function ($quuery) {
+            $quuery->where('user_id', Auth::id());
+        });
 
         if ($name) {
             $companies->where('name', 'like', '%' . $name . '%');
@@ -54,7 +56,7 @@ class CompanyController extends Controller
                 $fileName = $request->file('logo')->getClientOriginalName();
 
                 /** Membuat nama kustom */
-                $customName = 'company_' . $fileName . '_'  . $last_id;
+                $customName = 'company_' . $last_id . '_'  . $fileName;
 
                 /** Menyimpan file ke public/storage dengan nama kustom */
                 $path = $request->file('logo')->storeAs('public/logos', $customName);
@@ -97,15 +99,11 @@ class CompanyController extends Controller
 
             /** cek jika ada foto maka Upload foto ke folder publik */
             if ($request->hasFile('logo')) {
-                /** Mengambil ID terakhir*/
-                $last_id = Company::latest('id')->first()->id;
-                $last_id = $last_id + 1;
-
                 /** Mendapatkan nama file yang diunggah*/
                 $fileName = $request->file('logo')->getClientOriginalName();
 
                 /** Membuat nama kustom */
-                $customName = 'company_' . $fileName . '_'  . $last_id;
+                $customName = 'company_' . $company->id . '_'  . $fileName;
 
                 /** Menyimpan file ke public/storage dengan nama kustom */
                 $path = $request->file('logo')->storeAs('public/logos', $customName);
