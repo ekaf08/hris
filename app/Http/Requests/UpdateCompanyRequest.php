@@ -23,8 +23,8 @@ class UpdateCompanyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'  => 'required|string|max:255',
-            'logo'  => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'name'  => 'nullable|string|max:255',
+            'logo'  => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048'
         ];
     }
 }

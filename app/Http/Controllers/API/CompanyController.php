@@ -56,7 +56,7 @@ class CompanyController extends Controller
                 /** Membuat nama kustom */
                 $customName = 'company_' . $fileName . '_'  . $last_id;
 
-                /** Menyimpan file dengan nama kustom */
+                /** Menyimpan file ke public/storage dengan nama kustom */
                 $path = $request->file('logo')->storeAs('public/logos', $customName);
             }
 
@@ -84,7 +84,44 @@ class CompanyController extends Controller
         }
     }
 
-    public function update(UpdateCompanyRequest $request)
+    public function update(UpdateCompanyRequest $request, $id)
     {
+        try {
+            /** Mencari company berdasarkan id */
+            $company = Company::find($id);
+
+            /** Respons jika company tidak di temukan */
+            if (!$company) {
+                throw new Exception('Company tidak di temukan');
+            }
+
+            /** cek jika ada foto maka Upload foto ke folder publik */
+            if ($request->hasFile('logo')) {
+                /** Mengambil ID terakhir*/
+                $last_id = Company::latest('id')->first()->id;
+                $last_id = $last_id + 1;
+
+                /** Mendapatkan nama file yang diunggah*/
+                $fileName = $request->file('logo')->getClientOriginalName();
+
+                /** Membuat nama kustom */
+                $customName = 'company_' . $fileName . '_'  . $last_id;
+
+                /** Menyimpan file ke public/storage dengan nama kustom */
+                $path = $request->file('logo')->storeAs('public/logos', $customName);
+            }
+
+            /** Update company */
+            $company->update([
+                'name'  => $request->name,
+                'logo'  => $path
+            ]);
+
+            /** Respons update */
+            return ResponApiFormatter::success($company, 'Company berhasil di perbarui');
+        } catch (Exception $e) {
+            /** Respon error */
+            return ResponApiFormatter::error($e->getMessage(), 500);
+        }
     }
 }
