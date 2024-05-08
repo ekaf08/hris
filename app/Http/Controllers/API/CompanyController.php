@@ -21,9 +21,13 @@ class CompanyController extends Controller
         $name = $request->input('name');
         $limit = $request->input('limit', 10);
 
+        $companyQuery = Company::with(['users'])->whereHas('users', function ($query) {
+            $query->where('user_id', Auth::id());
+        });
+
         /** untuk mengambil api dengan filter id, url : hris/api/company?id=$id */
         if ($id) {
-            $company = Company::with(['users'])->find($id);
+            $company = $companyQuery->find($id);
 
             if ($company) {
                 return ResponApiFormatter::success($company, 'Company ditemukan.');
@@ -31,10 +35,8 @@ class CompanyController extends Controller
             return ResponApiFormatter::error('Company tidak ditemukan.', 404);
         }
 
-        /** untuk mengambil company berdasarkan login user */
-        $companies = Company::whereHas('users', function ($quuery) {
-            $quuery->where('user_id', Auth::id());
-        });
+        /** untuk mengambil company berdasarkan login user dengan relasi user */
+        $companies = $companyQuery;
 
         if ($name) {
             $companies->where('name', 'like', '%' . $name . '%');
